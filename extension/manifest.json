@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "TalkSync Meeting Overlay",
+  "version": "0.1.0",
+  "description": "Capture Google Meet, Microsoft Teams, and Zoho Meeting audio/captions and stream them to TalkSync for live translation.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "https://teams.microsoft.com/*",
+    "https://*.teams.microsoft.com/*",
+    "https://meeting.zoho.com/*",
+    "https://*.zoho.com/*",
+    "http://127.0.0.1:8000/*",
+    "ws://127.0.0.1:8000/*"
+  ],
+  "action": {
+    "default_title": "TalkSync Meeting Overlay",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*",
+        "https://teams.microsoft.com/*",
+        "https://*.teams.microsoft.com/*",
+        "https://meeting.zoho.com/*",
+        "https://*.zoho.com/meeting/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalkSync Live Demo</title>
+  <style>
+    :root {
+      --bg: #f6f1e7;
+      --panel: rgba(255, 252, 245, 0.92);
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: rgba(15, 23, 42, 0.12);
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --warm: #f59e0b;
+      --danger: #b91c1c;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      --radius: 24px;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(245, 158, 11, 0.24), transparent 35%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.22), transparent 38%),
+        linear-gradient(180deg, #fcfaf5 0%, var(--bg) 100%);
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 24px auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.9rem);
+      line-height: 0.95;
+      max-width: 11ch;
+    }
+
+    .hero p {
+      max-width: 70ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 0.92rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warm);
+    }
+
+    .dot.live {
+      background: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .controls {
+      align-content: start;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      background: white;
+      color: var(--ink);
+      font-size: 0.95rem;
+    }
+
+    .toggle-row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      font-size: 0.94rem;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    button.warn {
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid rgba(154, 52, 18, 0.15);
+    }
+
+    button.stop {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid rgba(185, 28, 28, 0.12);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .workspace {
+      display: grid;
+      gap: 18px;
+    }
+
+    .stream-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      min-height: 180px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .card h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .live-text {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .minor {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .log {
+      min-height: 260px;
+      max-height: 320px;
+      overflow: auto;
+      padding: 14px;
+      border-radius: 18px;
+      background: #111827;
+      color: #d1fae5;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      border: 1px solid rgba(17, 24, 39, 0.2);
+    }
+
+    audio {
+      width: 100%;
+    }
+
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stream-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">TalkSync Browser Demo</div>
+      <h1>Live client-call translation you can actually poke at.</h1>
+      <p>
+        This test UI connects to the current FastAPI backend, joins a session, captures microphone audio in the browser,
+        sends chunks over WebSocket, and renders captions, translated text, event state, and translated audio.
+      </p>
+      <div class="status-bar">
+        <div class="chip"><span class="dot" id="connDot"></span><span id="connText">Disconnected</span></div>
+        <div class="chip">Session <strong id="sessionId">not started</strong></div>
+        <div class="chip">Browser language <strong id="browserLang">detecting</strong></div>
+        <div class="chip">Provider <strong id="providerMode">unknown</strong></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="panel controls">
+        <h2>Session Setup</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="participantId">Participant ID</label>
+            <input id="participantId" value="client-1">
+          </div>
+          <div class="field">
+            <label for="participantName">Participant Name</label>
+            <input id="participantName" value="Test Client">
+          </div>
+          <div class="field">
+            <label for="role">Role</label>
+            <select id="role">
+              <option value="client">Client</option>
+              <option value="listener">Listener</option>
+              <option value="agent">Agent</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="speaker">Speaker</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sourceLanguage">Source Language</label>
+            <select id="sourceLanguage">
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="pa">Punjabi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="targetLanguage">Target Language</label>
+            <select id="targetLanguage">
+              <option value="hi">Hindi</option>
+              <option value="pa">Punjabi</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="channel">Channel</label>
+            <select id="channel">
+              <option value="web">Web</option>
+              <option value="zoom">Zoom</option>
+              <option value="google_meet">Google Meet</option>
+              <option value="microsoft_teams">Microsoft Teams</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="aiTier">AI Tier</label>
+            <select id="aiTier">
+              <option value="free">Free</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle"><input id="receiveAudio" type="checkbox"> Receive translated audio</label>
+            <label class="toggle"><input id="receiveTranscript" type="checkbox" checked> Receive transcript updates</label>
+            <label class="toggle"><input id="transcriptEnabled" type="checkbox"> Transcript mode (phase two)</label>
+            <label class="toggle"><input id="audioOutputEnabled" type="checkbox"> Audio output enabled</label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="connectBtn">Connect</button>
+          <button class="secondary" id="joinBtn" disabled>Join Session</button>
+          <button class="warn" id="startMicBtn" disabled>Start Mic</button>
+          <button class="stop" id="stopMicBtn" disabled>Stop Mic</button>
+          <button class="secondary" id="sampleBtn" disabled>Send Sample Chunk</button>
+          <button class="secondary" id="disconnectBtn" disabled>Disconnect</button>
+        </div>
+
+        <p class="minor" id="hint">
+          Use <strong>Connect</strong>, then <strong>Join Session</strong>, then either start the mic or send a sample chunk.
+          If you do not set an API key on the backend, the responses will still work but will use mock transcript/translation/audio.
+        </p>
+      </aside>
+
+      <section class="workspace">
+        <div class="stream-grid">
+          <article class="card">
+            <h3>Live Caption</h3>
+            <div class="live-text" id="captionText">Waiting for caption events.</div>
+          </article>
+          <article class="card">
+            <h3>Translated Output</h3>
+            <div class="live-text" id="translationText">Waiting for translation events.</div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <h2>Audio Output</h2>
+          <audio id="audioPlayer" controls></audio>
+          <p class="minor" id="audioMeta">No translated audio received yet.</p>
+        </article>
+
+        <article class="panel">
+          <h2>Realtime Event Log</h2>
+          <div class="log" id="eventLog"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      socket: null,
+      stream: null,
+      audioContext: null,
+      mediaSource: null,
+      processor: null,
+      pcmFrames: [],
+      isCapturing: false,
+      audioRequestInFlight: false,
+      pendingAudioPayload: null,
+      speechActive: false,
+      silenceFrames: 0,
+      utteranceFrameCount: 0,
+      sessionId: null,
+      isConnected: false,
+      hasJoined: false,
+    };
+
+    const els = {
+      connDot: document.getElementById("connDot"),
+      connText: document.getElementById("connText"),
+      sessionId: document.getElementById("sessionId"),
+      browserLang: document.getElementById("browserLang"),
+      providerMode: document.getElementById("providerMode"),
+      hint: document.getElementById("hint"),
+      participantId: document.getElementById("participantId"),
+      participantName: document.getElementById("participantName"),
+      role: document.getElementById("role"),
+      sourceLanguage: document.getElementById("sourceLanguage"),
+      targetLanguage: document.getElementById("targetLanguage"),
+      channel: document.getElementById("channel"),
+      aiTier: document.getElementById("aiTier"),
+      receiveAudio: document.getElementById("receiveAudio"),
+      receiveTranscript: document.getElementById("receiveTranscript"),
+      transcriptEnabled: document.getElementById("transcriptEnabled"),
+      audioOutputEnabled: document.getElementById("audioOutputEnabled"),
+      connectBtn: document.getElementById("connectBtn"),
+      joinBtn: document.getElementById("joinBtn"),
+      startMicBtn: document.getElementById("startMicBtn"),
+      stopMicBtn: document.getElementById("stopMicBtn"),
+      sampleBtn: document.getElementById("sampleBtn"),
+      disconnectBtn: document.getElementById("disconnectBtn"),
+      captionText: document.getElementById("captionText"),
+      translationText: document.getElementById("translationText"),
+      audioPlayer: document.getElementById("audioPlayer"),
+      audioMeta: document.getElementById("audioMeta"),
+      eventLog: document.getElementById("eventLog"),
+    };
+
+    const browserLanguage = (navigator.language || "en").toLowerCase();
+    const normalizedLanguage = browserLanguage.startsWith("hi")
+      ? "hi"
+      : browserLanguage.startsWith("pa")
+      ? "pa"
+      : "en";
+
+    els.browserLang.textContent = browserLanguage;
+    els.sourceLanguage.value = normalizedLanguage;
+    if (normalizedLanguage === "hi") {
+      els.targetLanguage.value = "en";
+    }
+
+    function logEvent(label, payload) {
+      const row = `[${new Date().toLocaleTimeString()}] ${label}\n${JSON.stringify(payload, null, 2)}\n`;
+      els.eventLog.textContent = `${row}\n${els.eventLog.textContent}`.trim();
+    }
+
+    function setConnectionState(connected, label) {
+      state.isConnected = connected;
+      if (!connected) {
+        state.audioRequestInFlight = false;
+        state.pendingAudioPayload = null;
+      }
+      els.connDot.classList.toggle("live", connected);
+      els.connText.textContent = label;
+      els.joinBtn.disabled = !connected;
+      els.sampleBtn.disabled = !connected || !state.hasJoined || els.providerMode.textContent === "openai";
+      els.disconnectBtn.disabled = !connected;
+      els.startMicBtn.disabled = !connected || !state.hasJoined;
+    }
+
+    function updateButtons() {
+      els.sampleBtn.disabled = !state.isConnected || !state.hasJoined || els.providerMode.textContent === "openai";
+      els.startMicBtn.disabled = !state.isConnected || !state.hasJoined || state.isCapturing;
+      els.stopMicBtn.disabled = !state.isCapturing;
+    }
+
+    function socketUrl() {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      return `${protocol}//${window.location.host}/ws/realtime`;
+    }
+
+    function sendJson(payload) {
+      if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
+        throw new Error("WebSocket is not connected.");
+      }
+      state.socket.send(JSON.stringify(payload));
+      logEvent("client_sent", payload);
+    }
+
+    function joinPayload() {
+      return {
+        event: "join_session",
+        participant_id: els.participantId.value.trim() || "client-1",
+        participant_name: els.participantName.value.trim() || "Test Client",
+        role: els.role.value,
+        preferred_language: els.targetLanguage.value,
+        receive_audio: els.receiveAudio.checked,
+        receive_transcript: els.receiveTranscript.checked,
+        session_config: {
+          source_language: els.sourceLanguage.value,
+          target_language: els.targetLanguage.value,
+          detected_language: normalizedLanguage,
+          auto_detect_language: true,
+          translation_enabled: true,
+          transcript_enabled: els.transcriptEnabled.checked,
+          audio_output_enabled: els.audioOutputEnabled.checked,
+          ai_tier: els.aiTier.value,
+          channel: els.channel.value,
+        },
+      };
+    }
+
+    function handleServerEvent(event) {
+      logEvent("server_received", event);
+
+      switch (event.event) {
+        case "session_started":
+          state.sessionId = event.session_id;
+          els.sessionId.textContent = event.session_id;
+          els.providerMode.textContent = event.provider_mode;
+          if (event.provider_mode === "openai") {
+            els.hint.textContent = "Real provider mode is active. Use Join Session and Start Mic. The sample button is disabled because it sends fake audio.";
+          }
+          updateButtons();
+          break;
+        case "participant_joined":
+          state.hasJoined = true;
+          updateButtons();
+          break;
+        case "caption":
+          els.captionText.textContent = event.text;
+          break;
+        case "translation":
+          state.audioRequestInFlight = false;
+          els.translationText.textContent = event.text;
+          flushPendingAudioPayload();
+          break;
+        case "audio":
+          els.audioPlayer.src = `data:${event.content_type};base64,${event.audio_base64}`;
+          els.audioMeta.textContent = `Received ${event.language} audio for participant ${event.participant_id || "unknown"}.`;
+          els.audioPlayer.play().catch(() => {
+            els.audioMeta.textContent += " Click play if the browser blocks autoplay.";
+          });
+          break;
+        case "session_state":
+          els.audioMeta.textContent = `Channel: ${event.active_channel} | Participants: ${event.participant_count} | Target: ${event.target_language}`;
+          break;
+        case "error":
+          state.audioRequestInFlight = false;
+          els.translationText.textContent = `Server error: ${event.message}`;
+          flushPendingAudioPayload();
+          break;
+      }
+    }
+
+    async function arrayBufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.slice(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    async function connectSocket() {
+      if (state.socket && state.socket.readyState === WebSocket.OPEN) {
+        return;
+      }
+
+      state.socket = new WebSocket(socketUrl());
+      setConnectionState(false, "Connecting...");
+
+      state.socket.addEventListener("open", () => {
+        setConnectionState(true, "Connected");
+        updateButtons();
+      });
+
+      state.socket.addEventListener("message", (message) => {
+        const payload = JSON.parse(message.data);
+        handleServerEvent(payload);
+      });
+
+      state.socket.addEventListener("close", () => {
+        state.hasJoined = false;
+        state.sessionId = null;
+        els.sessionId.textContent = "not started";
+        setConnectionState(false, "Disconnected");
+        updateButtons();
+      });
+
+      state.socket.addEventListener("error", () => {
+        setConnectionState(false, "Socket error");
+      });
+    }
+
+    async function startMic() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        alert("Microphone capture is not supported in this browser.");
+        return;
+      }
+
+      if (!state.hasJoined) {
+        alert("Join the session first.");
+        return;
+      }
+
+      state.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      state.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 16000,
+      });
+      state.mediaSource = state.audioContext.createMediaStreamSource(state.stream);
+      state.processor = state.audioContext.createScriptProcessor(4096, 1, 1);
+      state.pcmFrames = [];
+      state.speechActive = false;
+      state.silenceFrames = 0;
+      state.utteranceFrameCount = 0;
+      state.isCapturing = true;
+
+      state.processor.onaudioprocess = (audioEvent) => {
+        const frame = new Float32Array(audioEvent.inputBuffer.getChannelData(0));
+        const rms = calculateRms(frame);
+        const isSpeech = rms > 0.012;
+
+        if (isSpeech) {
+          state.speechActive = true;
+          state.silenceFrames = 0;
+          state.pcmFrames.push(frame);
+          state.utteranceFrameCount += 1;
+          return;
+        }
+
+        if (state.speechActive) {
+          state.pcmFrames.push(frame);
+          state.silenceFrames += 1;
+          state.utteranceFrameCount += 1;
+
+          const reachedPause = state.silenceFrames >= 2;
+          const reachedMaxUtterance = state.utteranceFrameCount >= 14;
+          if (reachedPause || reachedMaxUtterance) {
+            flushAudioChunk();
+          }
+        }
+      };
+
+      state.mediaSource.connect(state.processor);
+      state.processor.connect(state.audioContext.destination);
+      updateButtons();
+      els.audioMeta.textContent = "Microphone capture is live. Fast mode is on by default, so translated audio is disabled and utterances are sent after shorter pauses.";
+    }
+
+    function stopMic() {
+      flushAudioChunk();
+      if (state.processor) {
+        state.processor.disconnect();
+        state.processor.onaudioprocess = null;
+        state.processor = null;
+      }
+      if (state.mediaSource) {
+        state.mediaSource.disconnect();
+        state.mediaSource = null;
+      }
+      if (state.audioContext) {
+        state.audioContext.close();
+        state.audioContext = null;
+      }
+      if (state.stream) {
+        state.stream.getTracks().forEach((track) => track.stop());
+        state.stream = null;
+      }
+      state.pcmFrames = [];
+      state.speechActive = false;
+      state.silenceFrames = 0;
+      state.utteranceFrameCount = 0;
+      state.isCapturing = false;
+      updateButtons();
+    }
+
+    async function flushAudioChunk() {
+      if (!state.pcmFrames.length || !state.isConnected || !state.hasJoined) {
+        return;
+      }
+
+      const wavBuffer = encodeWav(state.pcmFrames, state.audioContext?.sampleRate || 16000);
+      state.pcmFrames = [];
+      state.speechActive = false;
+      state.silenceFrames = 0;
+      state.utteranceFrameCount = 0;
+
+      const payload = {
+        event: "audio_chunk",
+        participant_id: els.participantId.value.trim() || "client-1",
+        chunk: await arrayBufferToBase64(wavBuffer),
+        content_type: "audio/wav",
+        source_language: els.sourceLanguage.value,
+        target_language: els.targetLanguage.value,
+      };
+
+      if (state.audioRequestInFlight) {
+        state.pendingAudioPayload = payload;
+        els.audioMeta.textContent = "Processing the current utterance. Your latest phrase is queued next.";
+        return;
+      }
+
+      state.audioRequestInFlight = true;
+      sendJson(payload);
+    }
+
+    function flushPendingAudioPayload() {
+      if (!state.pendingAudioPayload || state.audioRequestInFlight) {
+        return;
+      }
+      const payload = state.pendingAudioPayload;
+      state.pendingAudioPayload = null;
+      state.audioRequestInFlight = true;
+      sendJson(payload);
+    }
+
+    function encodeWav(frames, sampleRate) {
+      const merged = mergeFrames(frames);
+      const pcm16 = floatTo16BitPCM(merged);
+      const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+      const view = new DataView(buffer);
+
+      writeAscii(view, 0, "RIFF");
+      view.setUint32(4, 36 + pcm16.length * 2, true);
+      writeAscii(view, 8, "WAVE");
+      writeAscii(view, 12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeAscii(view, 36, "data");
+      view.setUint32(40, pcm16.length * 2, true);
+
+      let offset = 44;
+      for (const sample of pcm16) {
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
+
+      return buffer;
+    }
+
+    function mergeFrames(frames) {
+      const length = frames.reduce((sum, frame) => sum + frame.length, 0);
+      const merged = new Float32Array(length);
+      let offset = 0;
+      for (const frame of frames) {
+        merged.set(frame, offset);
+        offset += frame.length;
+      }
+      return merged;
+    }
+
+    function floatTo16BitPCM(float32Array) {
+      const pcm16 = new Int16Array(float32Array.length);
+      for (let i = 0; i < float32Array.length; i += 1) {
+        const s = Math.max(-1, Math.min(1, float32Array[i]));
+        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+      }
+      return pcm16;
+    }
+
+    function writeAscii(view, offset, text) {
+      for (let i = 0; i < text.length; i += 1) {
+        view.setUint8(offset + i, text.charCodeAt(i));
+      }
+    }
+
+    function calculateRms(frame) {
+      let sum = 0;
+      for (let i = 0; i < frame.length; i += 1) {
+        sum += frame[i] * frame[i];
+      }
+      return Math.sqrt(sum / frame.length);
+    }
+
+    function sendSampleChunk() {
+      sendJson({
+        event: "audio_chunk",
+        participant_id: els.participantId.value.trim() || "client-1",
+        chunk: "dGVzdC1hdWRpby1jaHVuaw==",
+        content_type: "audio/webm",
+        source_language: els.sourceLanguage.value,
+        target_language: els.targetLanguage.value,
+      });
+    }
+
+    function disconnectSocket() {
+      stopMic();
+      if (state.socket) {
+        state.socket.close();
+        state.socket = null;
+      }
+      state.hasJoined = false;
+      updateButtons();
+    }
+
+    els.connectBtn.addEventListener("click", () => {
+      connectSocket().catch((error) => {
+        logEvent("connect_error", { message: error.message });
+      });
+    });
+
+    els.joinBtn.addEventListener("click", () => {
+      try {
+        sendJson(joinPayload());
+      } catch (error) {
+        logEvent("join_error", { message: error.message });
+      }
+    });
+
+    els.startMicBtn.addEventListener("click", () => {
+      startMic().catch((error) => {
+        logEvent("mic_error", { message: error.message });
+      });
+    });
+
+    els.stopMicBtn.addEventListener("click", stopMic);
+    els.sampleBtn.addEventListener("click", sendSampleChunk);
+    els.disconnectBtn.addEventListener("click", disconnectSocket);
+
+    setConnectionState(false, "Disconnected");
+    updateButtons();
+  </script>
+</body>
+</html>

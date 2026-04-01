@@ -1,0 +1,30 @@
+# Web API and realtime transport
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+websockets==15.0.1
+python-multipart==0.0.20
+
+# Validation and settings
+pydantic==2.11.7
+pydantic-settings==2.10.1
+
+# Async networking and integrations
+httpx==0.28.1
+aiofiles==24.1.0
+redis[hiredis]==6.4.0
+aiokafka==0.12.0
+
+# AI provider SDKs
+openai==1.99.9
+
+# Observability
+structlog==25.4.0
+prometheus-client==0.23.1
+
+# Audio utilities
+numpy==2.3.2
+soundfile==0.13.1
+
+# Testing
+pytest==8.4.1
+pytest-asyncio==1.1.0
