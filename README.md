@@ -12,6 +12,8 @@ Open Terminal in directory where you want to setup this project
 
 **Open Project in VS Code or in Any Editor, Open Editor Terminal**
 
+**Create a .env file on root directory with OPENAI_API_KEY=openai-your-key**
+
 ## RUN Commands in project root directory.
 1. python -m venv venv
 2. venv\Scripts\activate
