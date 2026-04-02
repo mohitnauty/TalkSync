@@ -5,9 +5,13 @@ Real Time Voice Translation From English to Hindi, Punjabi etc.
 
 ## Clone repo ##
 Open Terminal in directory where you want to setup this project
+
 **git clone https://github.com/mohitnauty/TalkSync.git**
+
 **cd TalkSync**
- 
+
+**Open Project in VS Code or in Any Editor, Open Editor Terminal**
+
 ## RUN Commands in project root directory.
 1. python -m venv venv
 2. venv\Scripts\activate
