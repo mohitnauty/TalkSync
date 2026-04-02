@@ -15,7 +15,7 @@ Open Terminal in directory where you want to setup this project
 ## RUN Commands in project root directory.
 1. python -m venv venv
 2. venv\Scripts\activate
-3. pip install -r requirements.txt
+3. pip install -r requirements.txt (Make sure there is no error in terminal while installing packages or modules)
 4. Open Chrome Browser and open URL **chrome://extensions**
 5. Click on **LOAD UNPACKED**
 6. Select extension folder from the project
