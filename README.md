@@ -21,4 +21,4 @@ Open Terminal in directory where you want to setup this project
 6. Click on **LOAD UNPACKED**
 7. Select extension folder from the project
 8. Then Start Google Meet and after starting meeting you will see a popup window for translation of **TalkSync**.
-9. Connect, Start Session and Start Mic (Always Toggle ON use audio with screen share)
+9. Connect, Join and Click on Captur Google Audio (Always Toggle ON use tab audio with screen share)
